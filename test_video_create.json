@@ -1,0 +1,36 @@
+{
+  "images": [
+    {
+      "id": 1,
+      "image_path": "/Users/chris/workspace/ai/image2video/data/uploads/health_video_0_20250401_193052_7dfdba7d.png",
+      "text": "测试图片1",
+      "duration": 3,
+      "animation": {
+        "name": "缩放",
+        "scale_from": 1.0,
+        "scale_to": 1.2,
+        "position_from": [0.5, 0.5],
+        "position_to": [0.5, 0.5]
+      },
+      "audio_path": null
+    },
+    {
+      "id": 2,
+      "image_path": "/Users/chris/workspace/ai/image2video/data/uploads/health_video_0_20250401_192915_109a1fae.png",
+      "text": "测试图片2",
+      "duration": 3,
+      "animation": {
+        "name": "缩放平移",
+        "scale_from": 1.0,
+        "scale_to": 1.2,
+        "position_from": [0.4, 0.4],
+        "position_to": [0.6, 0.6]
+      },
+      "audio_path": null
+    }
+  ],
+  "transition": "淡入淡出",
+  "transition_duration": 0.7,
+  "output_fps": 30,
+  "output_quality": "medium"
+} 

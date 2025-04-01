@@ -1,0 +1,67 @@
+# Python相关
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+.env
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+*.log
+
+# 数据目录 - 不提交用户媒体文件
+data/uploads/*
+data/output/*
+data/temp/*
+!data/uploads/.gitkeep
+!data/output/.gitkeep
+!data/temp/.gitkeep
+
+# 日志目录
+logs/*
+!logs/.gitkeep
+
+# IDE相关
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# 测试相关
+.coverage
+htmlcov/
+.pytest_cache/
+
+# 构建相关
+*.egg-info/
+dist/
+build/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Project specific
+output/
+*.mp4
+*.mp3
+*.log
+*.bak* 
