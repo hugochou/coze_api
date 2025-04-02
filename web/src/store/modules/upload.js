@@ -82,6 +82,15 @@ export const useUploadStore = defineStore('upload', {
       this.uploadedAudios = this.uploadedAudios.filter(audio => audio.id !== id)
     },
     
+    // 添加生成的音频到列表
+    addGeneratedAudio(audioItem) {
+      // 检查是否已存在
+      const exists = this.uploadedAudios.some(a => a.path === audioItem.path)
+      if (exists) return
+      
+      this.uploadedAudios.push(audioItem)
+    },
+    
     // 清空错误信息
     clearError() {
       this.error = null

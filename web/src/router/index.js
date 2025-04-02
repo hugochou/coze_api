@@ -6,6 +6,8 @@ const Home = () => import('../views/Home.vue')
 const Upload = () => import('../views/Upload.vue')
 const Videos = () => import('../views/Videos.vue')
 const Creator = () => import('../views/Creator.vue')
+const AudioCreator = () => import('../views/AudioCreator.vue')
+const FileManager = () => import('../views/FileManager.vue')
 const ApiTest = () => import('../views/ApiTest.vue')
 
 // 定义路由
@@ -40,6 +42,22 @@ const routes = [
     component: Creator,
     meta: {
       title: '视频创建'
+    }
+  },
+  {
+    path: '/audio-creator',
+    name: 'AudioCreator',
+    component: AudioCreator,
+    meta: {
+      title: '音频创建'
+    }
+  },
+  {
+    path: '/file-manager',
+    name: 'FileManager',
+    component: FileManager,
+    meta: {
+      title: '文件管理'
     }
   },
   {

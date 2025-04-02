@@ -24,9 +24,19 @@
         <span>视频创建</span>
       </el-menu-item>
       
+      <el-menu-item index="/audio-creator">
+        <el-icon><Microphone /></el-icon>
+        <span>音频创建</span>
+      </el-menu-item>
+      
       <el-menu-item index="/videos">
         <el-icon><VideoPlay /></el-icon>
         <span>视频管理</span>
+      </el-menu-item>
+      
+      <el-menu-item index="/file-manager">
+        <el-icon><Folder /></el-icon>
+        <span>文件管理</span>
       </el-menu-item>
       
       <el-menu-item index="/api-test">
@@ -46,7 +56,9 @@ import {
   Upload, 
   VideoCamera, 
   VideoPlay, 
-  Connection 
+  Connection,
+  Microphone,
+  Folder
 } from '@element-plus/icons-vue'
 
 const route = useRoute()

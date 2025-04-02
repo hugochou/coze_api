@@ -20,43 +20,37 @@ export const useAudioStore = defineStore('audio', {
   }),
   
   getters: {
-    // 获取所有创建的音频
-    allAudios: (state) => state.createdAudios,
-    
-    // 获取当前选中的音频
-    currentAudio: (state) => state.selectedAudio,
+    // 获取音频列表
+    audios: (state) => state.createdAudios,
     
     // 获取音频配置
     config: (state) => state.audioConfig
   },
   
   actions: {
-    // 创建音频（文本转语音）
-    async createAudio(text, options = {}) {
-      if (!text) {
-        this.error = '请输入要转换的文本'
-        return null
-      }
-      
+    // 创建音频
+    async createAudio(data) {
       try {
         this.creating = true
         this.error = null
         
-        // 准备请求数据
-        const requestData = {
-          text,
+        // 应用默认配置
+        const params = {
           ...this.audioConfig,
-          ...options
+          ...data
         }
         
-        const result = await audio.createAudio(requestData)
+        const result = await audio.createAudio(params)
         
-        // 添加到创建列表
-        this.createdAudios.push({
-          id: Date.now().toString(),
-          text,
-          ...result
-        })
+        // 添加到创建的音频列表
+        if (result) {
+          this.createdAudios.push({
+            id: Date.now().toString(),
+            text: data.text,
+            params: { ...params },
+            ...result
+          })
+        }
         
         return result
       } catch (error) {
@@ -74,15 +68,16 @@ export const useAudioStore = defineStore('audio', {
     },
     
     // 删除创建的音频
-    removeAudio(id) {
-      this.createdAudios = this.createdAudios.filter(item => item.id !== id)
+    deleteAudio(id) {
+      this.createdAudios = this.createdAudios.filter(audio => audio.id !== id)
+      
       if (this.selectedAudio && this.selectedAudio.id === id) {
         this.selectedAudio = null
       }
     },
     
     // 更新音频配置
-    updateAudioConfig(config) {
+    updateConfig(config) {
       this.audioConfig = {
         ...this.audioConfig,
         ...config

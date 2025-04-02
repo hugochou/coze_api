@@ -12,12 +12,18 @@ class PathUtils:
     @staticmethod
     def get_project_root() -> Path:
         """获取项目根目录"""
-        return Path.cwd()
+        # 解决从不同目录启动时路径问题
+        current_dir = Path.cwd()
+        # 如果当前是在api子目录，则返回其父目录
+        if current_dir.name == 'api':
+            return current_dir.parent
+        # 否则假设当前目录就是项目根目录
+        return current_dir
     
     @staticmethod
     def get_data_dir() -> Path:
         """获取数据目录"""
-        data_dir = Path.cwd() / 'data'
+        data_dir = PathUtils.get_project_root() / 'data'
         os.makedirs(data_dir, exist_ok=True)
         return data_dir
     

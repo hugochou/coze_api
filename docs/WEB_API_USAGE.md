@@ -147,7 +147,7 @@ API基础URL由环境变量`VITE_API_BASE_URL`定义，在开发环境中默认�
   ```json
   {
     "text": "要转换为音频的文本内容",
-    "voice": "zh-CN",  // 可选，语音类型
+    "voice": "zh-cn",  // 可选，语音类型
     "speed": 1.0,      // 可选，语速 (0.5-2.0)
     "format": "mp3"    // 可选，输出格式 (mp3, wav)
   }
@@ -157,9 +157,9 @@ API基础URL由环境变量`VITE_API_BASE_URL`定义，在开发环境中默认�
   {
     "success": true,
     "filename": "audio_20240501_123045_abcd1234.mp3",
-    "path": "/path/to/uploads/audio_20240501_123045_abcd1234.mp3",
-    "url": "/uploads/audio_20240501_123045_abcd1234.mp3",
-    "full_url": "http://localhost:8000/uploads/audio_20240501_123045_abcd1234.mp3"
+    "path": "/path/to/data/audio/audio_20240501_123045_abcd1234.mp3",
+    "url": "/audio/audio_20240501_123045_abcd1234.mp3",
+    "full_url": "http://localhost:8000/audio/audio_20240501_123045_abcd1234.mp3"
   }
   ```
 - **Web UI调用示例**:
@@ -332,6 +332,143 @@ API基础URL由环境变量`VITE_API_BASE_URL`定义，在开发环境中默认�
 - **端点**: `/videos/<filename>`
 - **方法**: GET
 - **直接返回视频文件**
+
+#### 访问音频文件
+
+- **端点**: `/audio/<filename>`
+- **方法**: GET
+- **直接返回音频文件**
+
+### 文件管理
+
+#### 获取文件列表
+
+获取系统中的文件列表，可按类型筛选。
+
+- **端点**: `/api/file/list`
+- **方法**: GET
+- **查询参数**:
+  - `type`: 文件类型，可选值为 all, image, audio, video
+- **响应示例**:
+  ```json
+  {
+    "success": true,
+    "files": [
+      {
+        "name": "file1.jpg",
+        "path": "/path/to/file1.jpg",
+        "url": "/uploads/file1.jpg",
+        "type": "image",
+        "size": 1024,
+        "modified": "2024-04-01 12:30:45"
+      },
+      {
+        "name": "audio1.mp3",
+        "path": "/path/to/audio1.mp3",
+        "url": "/audio/audio1.mp3",
+        "type": "audio",
+        "size": 2048,
+        "modified": "2024-04-01 12:35:10"
+      }
+    ]
+  }
+  ```
+- **Web UI调用示例**:
+  ```javascript
+  import { file } from '../api';
+  
+  async function fetchFiles(type = 'all') {
+    try {
+      const result = await file.getFileList(type);
+      console.log('文件列表:', result.files);
+      return result.files;
+    } catch (error) {
+      console.error('获取文件列表失败:', error);
+    }
+  }
+  ```
+
+#### 删除文件
+
+删除指定的一个或多个文件。
+
+- **端点**: `/api/file/delete`
+- **方法**: POST
+- **请求格式**: JSON
+- **参数**:
+  ```json
+  {
+    "files": [
+      "/path/to/file1.jpg",
+      "/path/to/file2.mp3"
+    ]
+  }
+  ```
+- **响应示例**:
+  ```json
+  {
+    "success": true,
+    "deleted": 2,
+    "failed": []
+  }
+  ```
+- **Web UI调用示例**:
+  ```javascript
+  import { file } from '../api';
+  
+  async function deleteFiles(filePaths) {
+    try {
+      const result = await file.deleteFiles(filePaths);
+      console.log('删除成功:', result.deleted, '个文件');
+      if (result.failed.length > 0) {
+        console.warn('删除失败:', result.failed.length, '个文件');
+      }
+      return result;
+    } catch (error) {
+      console.error('删除文件失败:', error);
+    }
+  }
+  ```
+
+#### 清空文件
+
+清空指定类型的所有文件。
+
+- **端点**: `/api/file/clear`
+- **方法**: POST
+- **请求格式**: JSON
+- **参数**:
+  ```json
+  {
+    "type": "all" // 文件类型，可选值为 all, image, audio, video
+  }
+  ```
+- **响应示例**:
+  ```json
+  {
+    "success": true,
+    "message": "成功清空所有文件",
+    "cleared": {
+      "image": 10,
+      "audio": 5,
+      "video": 3
+    }
+  }
+  ```
+- **Web UI调用示例**:
+  ```javascript
+  import { file } from '../api';
+  
+  async function clearFiles(type = 'all') {
+    try {
+      const result = await file.clearFiles(type);
+      console.log('清空文件成功:', result.message);
+      return result;
+    } catch (error) {
+      console.error('清空文件失败:', error);
+    }
+  }
+  ```
 
 ## 错误处理
 

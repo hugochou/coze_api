@@ -1,10 +1,11 @@
 import request from '../utils/request'
-import * as uploadApi from './upload'
-import * as videoApi from './video'
-import * as audioApi from './audio'
+import * as upload from './upload'
+import * as video from './video'
+import * as audio from './audio'
+import * as file from './file'
 
 /**
- * 获取API服务健康状态
+ * 获取API健康状态
  * @returns {Promise} - 返回健康状态信息
  */
 export function getHealthStatus() {
@@ -14,15 +15,19 @@ export function getHealthStatus() {
   })
 }
 
-// 导出所有API
-export const upload = uploadApi
-export const video = videoApi
-export const audio = audioApi
+// 导出API模块
+export {
+  upload,
+  video,
+  audio,
+  file
+}
 
 // 统一导出
 export default {
-  ...uploadApi,
-  ...videoApi,
-  ...audioApi,
+  upload,
+  video,
+  audio,
+  file,
   getHealthStatus
 } 

@@ -61,6 +61,13 @@ def create_app():
         output_dir = path_utils.get_output_dir()
         return send_from_directory(output_dir, filename)
     
+    @app.route('/audio/<path:filename>')
+    def serve_audio(filename):
+        """提供生成的音频文件"""
+        path_utils = PathUtils()
+        audio_dir = path_utils.get_data_dir() / 'audio'
+        return send_from_directory(audio_dir, filename)
+    
     # 添加健康检查路由
     @app.route('/api/health')
     def health_check():
