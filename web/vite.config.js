@@ -14,22 +14,39 @@ export default defineConfig({
     port: 3000,
     open: true,
     proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-        rewrite: (path) => path
-      },
-      '/uploads': {
-        target: 'http://localhost:8000',
+      '^/api/': {
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true
       },
-      '/videos': {
-        target: 'http://localhost:8000',
+      '^/uploads/': {
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true
       },
-      '/audio': {
-        target: 'http://localhost:8000',
+      '^/videos/': {
+        target: 'http://127.0.0.1:8000',
         changeOrigin: true
+      },
+      '^/audio/': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
+      }
+    },
+    middlewares: [
+      (req, res, next) => {
+        if (!req.url.match(/^\/(api|uploads|videos|audio|assets)\//)) {
+          req.url = '/index.html'
+        }
+        next()
+      }
+    ]
+  },
+  base: '/',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'element-plus': ['element-plus']
+        }
       }
     }
   }

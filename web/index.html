@@ -1,13 +1,23 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Vue</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coze API</title>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
+    <script>
+      // 处理前端路由
+      (function() {
+        const { pathname } = window.location
+        // 如果不是API或静态资源请求，则重定向到index.html
+        if (!pathname.match(/^\/(api|uploads|videos|audio|assets)\//)) {
+          window.history.replaceState(null, null, pathname)
+        }
+      })()
+    </script>
   </body>
 </html>

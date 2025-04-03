@@ -496,4 +496,157 @@ class VideoService:
             return True
         except Exception as e:
             print(f"打开文件失败: {str(e)}")
-            return False 
+            return False
+    
+    def combine_videos(self, video_paths: List[str], output_path: str,
+                      transition: str = "淡入淡出", transition_duration: float = 0.7,
+                      output_fps: Optional[int] = None, output_quality: str = "medium") -> str:
+        """
+        将多段视频按顺序合并成一个视频，支持转场效果
+        
+        Args:
+            video_paths: 视频文件路径列表
+            output_path: 输出视频文件路径
+            transition: 转场效果名称
+            transition_duration: 转场持续时间（秒）
+            output_fps: 输出视频帧率，None表示与第一个视频保持一致
+            output_quality: 输出质量 (low, medium, high)
+            
+        Returns:
+            生成的视频文件路径
+        """
+        if not video_paths:
+            raise ValueError("没有提供要合并的视频")
+        
+        # 生成基于日期时间的视频文件名
+        now = datetime.datetime.now()
+        date_time_str = now.strftime("%Y%m%d_%H%M")
+        
+        # 确保输出目录存在
+        output_dir = os.path.dirname(output_path)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        
+        # 生成新的输出路径，使用时间戳
+        # 基于原始输出路径获取目录
+        original_dir = os.path.dirname(output_path)
+        
+        # 生成新的文件名（使用时间戳+随机数）
+        random_id = str(uuid.uuid4())[:4]
+        new_filename = f"combined_{date_time_str}_{random_id}.mp4"
+        
+        # 组合新的输出路径
+        output_path = os.path.join(original_dir, new_filename)
+        
+        video_clips = []
+        
+        try:
+            print("\n" + "="*50)
+            print(f"开始合并视频 - 共 {len(video_paths)} 个视频文件")
+            print(f"转场效果: {transition}, 时长: {transition_duration}秒")
+            print(f"输出文件: {output_path}")
+            print(f"输出质量: {output_quality}")
+            print("="*50 + "\n")
+            
+            # 加载所有视频
+            for i, video_path in enumerate(video_paths):
+                print(f"\n{'*'*30}")
+                print(f"加载视频 {i+1}/{len(video_paths)}...")
+                
+                if not os.path.exists(video_path):
+                    raise FileNotFoundError(f"视频文件未找到: {video_path}")
+                
+                # 加载视频
+                video = VideoFileClip(video_path)
+                
+                # 获取视频文件名
+                video_filename = os.path.basename(video_path)
+                
+                print(f"视频 {i+1} ({video_filename}) 加载完成，持续时间: {video.duration:.2f}秒，帧率: {video.fps}")
+                
+                # 设置输出帧率（只有第一个视频需要）
+                if i == 0 and output_fps is None:
+                    output_fps = video.fps
+                    print(f"使用第一个视频的帧率作为输出帧率: {output_fps}")
+                
+                video_clips.append(video)
+                print(f"{'*'*30}\n")
+            
+            # 如果指定了输出帧率，确保所有视频使用相同的帧率
+            if output_fps:
+                print(f"将所有视频调整为帧率: {output_fps}")
+                for i, clip in enumerate(video_clips):
+                    if clip.fps != output_fps:
+                        print(f"视频 {i+1} 帧率从 {clip.fps} 调整为 {output_fps}")
+                        # 重新设置帧率不会重新采样视频，只会改变播放速度
+                        # 如果需要保持原有的速度，需要重新采样，但这会增加处理时间
+                        video_clips[i] = clip.set_fps(output_fps)
+            
+            # 应用过渡效果
+            if len(video_clips) > 1 and transition != "无":
+                print("\n" + "-"*40)
+                print("开始应用转场效果...")
+                
+                # 应用转场效果
+                clips = self.transition_service.apply_transitions_to_clips(
+                    video_clips, 
+                    transition, 
+                    transition_duration
+                )
+                    
+                # 将所有片段连接起来
+                print("合并所有视频片段...")
+                final_clip = concatenate_videoclips(clips, method="compose")
+                print(f"转场效果应用完成，最终视频时长: {final_clip.duration:.2f}秒")
+                print("-"*40 + "\n")
+            else:
+                # 无转场效果，直接连接
+                print("合并所有视频片段（无转场）...")
+                final_clip = concatenate_videoclips(video_clips, method="compose")
+            
+            # 根据质量设置输出参数
+            bitrate = None
+            if output_quality == 'low':
+                bitrate = '1000k'
+            elif output_quality == 'medium':
+                bitrate = '2500k'
+            elif output_quality == 'high':
+                bitrate = '5000k'
+            
+            print(f"\n正在导出视频到 {output_path}...")
+            if bitrate:
+                print(f"使用比特率: {bitrate}")
+            
+            # 写入视频文件
+            final_clip.write_videofile(
+                output_path,
+                codec='libx264',
+                audio_codec='aac',
+                bitrate=bitrate,
+                fps=output_fps or self.default_fps,
+                threads=4
+            )
+            
+            print("清理临时资源...")
+            # 释放资源
+            final_clip.close()
+            for clip in video_clips:
+                clip.close()
+            
+            print(f"视频合并完成: {output_path}")
+            print("="*50 + "\n")
+            
+            return output_path
+            
+        except Exception as e:
+            # 清理资源
+            for clip in video_clips:
+                try:
+                    if hasattr(clip, 'close'):
+                        clip.close()
+                except:
+                    pass
+            
+            print(f"视频合并出错: {str(e)}")
+            traceback.print_exc()
+            raise 

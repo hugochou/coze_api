@@ -2,8 +2,10 @@
   <header class="app-header">
     <div class="header-left">
       <el-button type="text" :icon="Expand" class="menu-btn" @click="toggleSidebar" />
-      <img src="../../assets/logo.svg" alt="Coze API" class="app-logo" />
-      <h1 class="app-title">Coze API 管理平台</h1>
+      <div class="logo-container">
+        <img src="../../assets/logo.svg" alt="Coze API" class="app-logo" />
+        <h1 class="app-title">Coze API</h1>
+      </div>
     </div>
     <div class="header-right">
       <span class="api-status">
@@ -64,20 +66,35 @@ const checkApiHealth = async () => {
   align-items: center;
 }
 
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.logo-container:hover {
+  background-color: #f5f7fa;
+}
+
 .app-logo {
   height: 32px;
   width: 32px;
-  margin-right: 12px;
   transition: transform 0.3s ease;
 }
 
-.app-logo:hover {
-  transform: scale(1.1);
+.logo-container:hover .app-logo {
+  transform: rotate(360deg);
 }
 
 .app-title {
-  font-size: 18px;
-  color: #409eff;
+  font-size: 20px;
+  font-weight: 600;
+  background: linear-gradient(45deg, #4B79E4, #A44BF1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin: 0;
 }
 

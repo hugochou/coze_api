@@ -9,6 +9,7 @@ const Creator = () => import('../views/Creator.vue')
 const AudioCreator = () => import('../views/AudioCreator.vue')
 const FileManager = () => import('../views/FileManager.vue')
 const ApiTest = () => import('../views/ApiTest.vue')
+const NotFound = () => import('../views/NotFound.vue')
 
 // 定义路由
 const routes = [
@@ -68,10 +69,19 @@ const routes = [
       title: 'API测试'
     }
   },
-  // 默认重定向到首页
+  // 404页面路由
+  {
+    path: '/404',
+    name: 'NotFound',
+    component: NotFound,
+    meta: {
+      title: '页面未找到'
+    }
+  },
+  // 将所有未匹配的路由重定向到404页面
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/'
+    redirect: '/404'
   }
 ]
 

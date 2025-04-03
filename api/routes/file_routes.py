@@ -11,10 +11,25 @@ from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 
 from core.utils.path_utils import PathUtils
+from config import settings
 
 # 创建蓝图
 file_bp = Blueprint('file', __name__, url_prefix='/api/file')
 path_utils = PathUtils()
+
+def get_full_url(relative_url):
+    """获取完整URL，包含域名和端口
+    
+    优先使用配置文件中的BASE_URL，如果未配置则使用请求中的主机名
+    """
+    # 先尝试使用配置文件中的BASE_URL
+    if hasattr(settings, 'API_BASE_URL') and settings.API_BASE_URL:
+        base_url = settings.API_BASE_URL.rstrip('/')
+        return f"{base_url}{relative_url}"
+    
+    # 如果没有配置，则使用请求的主机名
+    host = request.host_url.rstrip('/')
+    return f"{host}{relative_url}"
 
 @file_bp.route('/list', methods=['GET'])
 def list_files():
@@ -32,6 +47,7 @@ def list_files():
                 "name": "file1.jpg",
                 "path": "/path/to/file1.jpg",
                 "url": "/uploads/file1.jpg",
+                "full_url": "http://localhost:8000/uploads/file1.jpg",
                 "type": "image",
                 "size": 1024, // 字节
                 "modified": "2024-04-01 12:30:45"
@@ -83,12 +99,15 @@ def list_files():
                         
                         # 获取文件信息
                         stat = file_path.stat()
+                        relative_url = f"{url_prefix}{file_path.name}"
+                        full_url = get_full_url(relative_url)
                         
-                        # 添加文件信息，不再根据扩展名过滤
+                        # 添加文件信息
                         file_info = {
                             'name': file_path.name,
                             'path': str(file_path),
-                            'url': f"{url_prefix}{file_path.name}",
+                            'url': relative_url,
+                            'full_url': full_url,
                             'type': type_name,
                             'size': stat.st_size,
                             'modified': datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
